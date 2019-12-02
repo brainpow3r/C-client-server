@@ -40,10 +40,10 @@ int main(int argc, char *argv[])
 {
     char message[MAXDATASIZE];
     char nickName[MAXNAMESIZE];
-    //int *new_sockfd; //added
-    int sockfd;//, numbytes;  
-    //char buf[MAXDATASIZE];
-    char sBuf[MAXDATASIZE]; //added
+
+    int sockfd;
+
+    char sBuf[MAXDATASIZE];
     struct addrinfo hints, *servinfo, *p;
     int rv;
     char s[INET6_ADDRSTRLEN];
@@ -89,22 +89,17 @@ int main(int argc, char *argv[])
     printf("client: connecting to %s\n", s);
 
     freeaddrinfo(servinfo); // all done with this structure
-    
-    //****EDIT STARTS HERE    
+     
     puts("Nickname:");
     memset(&nickName, sizeof(nickName), 0);
     memset(&message, sizeof(message), 0); //clean message buffer
     fgets(nickName, MAXNAMESIZE, stdin);  //catch nickname
-    //puts(message);
     
     //create new thread to keep receiving messages:
     pthread_t recv_thread;
-    //new_sockfd = malloc(sizeof(int));
-    //new_sockfd = sockfd;
     
     if( pthread_create(&recv_thread, NULL, receive_handler, (void*)(intptr_t) sockfd) < 0)
     {   //we passed (intptr_t) instead of (void*) sockfd to supress warnings
-		//use structs if passing more than one argument
         perror("could not create thread");
         return 1;
     }    
@@ -114,7 +109,6 @@ int main(int argc, char *argv[])
     puts("Connected\n");
     puts("[Type '/quit' to quit]");
 
-    //while(strcmp(sBuf,"/quit") != 0)
     for(;;)
 	{
 		char temp[6];
@@ -147,9 +141,8 @@ int main(int argc, char *argv[])
             count++;
         }
         message[count] = '\0';
-        //puts(message);
-        //Send some data
-        //if(send(sockfd, sBuf , strlen(sBuf) , 0) < 0)
+
+        //Send entered data
         if(send(sockfd, message, strlen(message), 0) < 0)
         {
             puts("Send failed");
@@ -157,9 +150,6 @@ int main(int argc, char *argv[])
         }
         memset(&sBuf, sizeof(sBuf), 0);
         
-        /* receive message from client: 
-         * we move this to a thread in order to get synchronous recv()s.
-         */
     }
     
     //puts("Closing socket connection");
@@ -172,7 +162,6 @@ int main(int argc, char *argv[])
 //thread function
 void *receive_handler(void *sock_fd)
 {
-    //int* sFd = (int*) sock_fd;
 	int sFd = (intptr_t) sock_fd;
     char buffer[MAXDATASIZE];
     int nBytes;

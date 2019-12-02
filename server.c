@@ -95,7 +95,7 @@ int main(void)
         perror("listen");
         exit(3);
     }
-    puts("hearing aid is on, server listening...");
+    puts("Server listening...");
     
     // add the listener to the master set
     FD_SET(listener, &master);
@@ -114,7 +114,7 @@ int main(void)
         }
 
         //run through the existing connections looking for data to read
-        for(i = 0; i <= fdmax; i++) //EDIT HERE
+        for(i = 0; i <= fdmax; i++)
         {
             if (FD_ISSET(i, &read_fds))
             {   // we got one
@@ -138,7 +138,7 @@ int main(void)
                             fdmax = newfd;
                         }
                         printf("selectserver: new connection from %s on "
-                               "socket %d\n", inet_ntop(remoteaddr.ss_family,
+                               "socket %d\n", inet_ntop(remoteaddr.ss_family,       // converts IPv4 and IPv6 from binary to text form
                                get_in_addr((struct sockaddr*)&remoteaddr),
                                remoteIP, INET6_ADDRSTRLEN), newfd);
                     }
